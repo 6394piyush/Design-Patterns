@@ -1,0 +1,11 @@
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\bin\Debug\netcoreapp3.0\DesignPatterns.exe
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\bin\Debug\netcoreapp3.0\DesignPatterns.deps.json
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\bin\Debug\netcoreapp3.0\DesignPatterns.runtimeconfig.json
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\bin\Debug\netcoreapp3.0\DesignPatterns.runtimeconfig.dev.json
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\bin\Debug\netcoreapp3.0\DesignPatterns.dll
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\bin\Debug\netcoreapp3.0\DesignPatterns.pdb
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\obj\Debug\netcoreapp3.0\DesignPatterns.csprojAssemblyReference.cache
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\obj\Debug\netcoreapp3.0\DesignPatterns.AssemblyInfoInputs.cache
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\obj\Debug\netcoreapp3.0\DesignPatterns.AssemblyInfo.cs
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\obj\Debug\netcoreapp3.0\DesignPatterns.dll
+F:\DOTNETLearning\DesignPatterns\DesignPatterns\DesignPatterns\obj\Debug\netcoreapp3.0\DesignPatterns.pdb
