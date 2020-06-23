@@ -2,37 +2,40 @@
 
 namespace DesignPatterns
 {
-    class DecoratorPattern
+    class AbstractionBridge
     {
-
-    }
-    interface IComponent
-    {
-        string Operation();        
-    }
-
-    class Component : IComponent
-    {
+        Bridge bridge;
+        public AbstractionBridge( Bridge implementation)
+        {
+            bridge = implementation;
+        }
         public string Operation()
         {
-            return "I am Operation";
+            return "Abstraction" + "<<<<Bridge>>>>>" + bridge.OperationImp();
+        }
+    }
+    interface Bridge
+    {
+        string OperationImp();        
+    }
+
+    class ImplementationA:Bridge
+    {
+        public string OperationImp()
+        {
+            return "returned Implementation A";
         }
     }
 
-    class DecoratorA : IComponent
+    class ImplementationB : Bridge
     {
         
-            IComponent component;
-
-            public DecoratorA(IComponent c)
-            {
-                component = c;
-            }
-        public string Operation()
+        public string OperationImp()
         {
-            string s = component.Operation();
-            string st = s + " returned after modyfying from Decorator";
-            return st;
+            
+            
+           return "returned Implementation B";
+     
         }
     }
     class Program
@@ -40,9 +43,9 @@ namespace DesignPatterns
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Design Patterns");
-            IComponent component = new Component();
-            Console.WriteLine(component.Operation());
-            Console.WriteLine(new DecoratorA(component).Operation());
+            
+            Console.WriteLine(new AbstractionBridge(new ImplementationA()).Operation());
+            Console.WriteLine(new AbstractionBridge(new ImplementationB()).Operation());
         }
     }
 }
