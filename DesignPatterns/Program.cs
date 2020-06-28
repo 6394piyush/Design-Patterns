@@ -1,134 +1,170 @@
-﻿using CompositePattern;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static DesignPatterns.FlyweightFactory;
 
-namespace CompositePattern
-{
-    public interface IComponent<T>
-    {
-        void Add(IComponent<T> c);
-        IComponent<T> Remove(T s);
-        IComponent<T> Find(T s);
-        string Display(int depth);
-        T Name { get; set; }
-
-    }
-    public class Component<T> : IComponent<T>
-    {
-        public T Name { get; set; }
-
-        public void Add(IComponent<T> c)
-        {
-            Console.WriteLine("Cannot Add Directly");
-        }
-
-        public string Display(int depth)
-        {
-            return new string(depth + "-" + Name);
-        }
-
-        public IComponent<T> Find(T s)
-        {
-            if(s.Equals(Name))
-            {
-                return this;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public IComponent<T> Remove(T s)
-        {
-            Console.WriteLine("Cannot remove directly");
-            return this;
-        }
-    }
-    public class Composite<T> : IComponent<T>
-    {
-        List <IComponent<T>> list;
-        public T Name { get; set; }
-        IComponent<T> holder = null;
-        public Composite(T name)
-        {
-            Name = name;
-            list = new List<IComponent<T>>();
-        }
-
-        public void Add(IComponent<T> c)
-        {
-            list.Add(c);
-        }
-
-        public string Display(int depth)
-        {
-            StringBuilder sb = new StringBuilder(new String('-',depth));
-            sb.Append("Set " + Name + " Length " + list.Count + "\n");
-            foreach (IComponent<T> component in list)
-            {
-                sb.Append(component.Display(depth + 2));
-            }
-            return sb.ToString();
-
-        }
-
-        public IComponent<T> Find(T s)
-        {
-            IComponent<T> found = null;
-            holder = this;
-            if (Name.Equals(s))
-                return this;
-            foreach (IComponent<T> c in list)
-            {
-                found = c.Find(s);
-                if (found != null)
-                    break;
-            }
-            return found;
-        }
-
-        public IComponent<T> Remove(T s)
-        {
-            holder = this;
-            IComponent<T> p = holder.Find(s);
-            if(holder!=null)
-            {
-                (holder as Composite<T>).list.Remove(p); //casting of holder to composite from Icomposite
-                return holder;
-            }
-            else
-            {
-                return this;
-            }
-
-        }
-    }
-}
 namespace DesignPatterns
-{ 
+{
+    public interface IFlyweight
+{
+
+    void AddPeople(Person p); //add people with name and age
+    
+        void GetPeople(Person p); //Intrisic State
+        
+        void GetFullDetails(Person p);//Extrinsic State
+
+    
+}
+
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Country { get; set; }
+    public string Education { get; set; }
+    public string Hobby { get; set; }
+}
+public class Flyweight : IFlyweight
+{
+        List<Person> people;
+        public Flyweight()
+        {
+            people = new List<Person>();
+        }
+        
+    public void GetFullDetails(Person p)
+    {
+        
+             
+                Console.WriteLine("Name : " +p.Name);
+                Console.WriteLine("Age : " + p.Age);
+                Console.WriteLine("Country : " + p.Country);
+                Console.WriteLine("Education : " + p.Education);
+                Console.WriteLine("Hobby : " + p.Hobby); 
+            
+    }
+
+    public void AddPeople(Person p)
+    {
+            var e = new Person() { Name = p.Name, Age = p.Age, Country = p.Country, Education = p.Education, Hobby = p.Hobby };
+            people.Add(e);
+    }
+
+    public void GetPeople(Person p)
+    { 
+                Console.WriteLine("Name : " + p.Name);        
+    }
+
+    }
+    public class FlyweightFactory
+    {
+
+        Dictionary<Person, IFlyweight> flyweights = new Dictionary<Person, IFlyweight>();
+
+        public FlyweightFactory()
+        {
+            flyweights.Clear();
+        }
+        public int ObjectCount()
+        {
+            return flyweights.Count;
+        }
+
+        public IFlyweight this[Person index]
+        {
+            get
+            {
+                if (!flyweights.ContainsKey(index))
+                    flyweights[index] = new Flyweight();
+                return flyweights[index];
+            }
+        }
+    }
+        
+    public class Client
+    {
+        //shared state --The People
+        public static FlyweightFactory groups = new FlyweightFactory();
+        static Dictionary<string, List<Person>> allGroups = new Dictionary<string, List<Person>>();
+
+        public void LoadPeopleGroups()
+        {
+            var peopleGroups = new[]
+            {
+                new
+                {
+                    GName = "P",
+                    Members = new[] {
+                        new Person { Name = "Piyush", Age = 23, Country = "India", Education = "Graduation", Hobby = "Football" },
+                        new Person { Name = "Palash", Age = 23, Country = "India", Education = "Graduation", Hobby = "Chess" },
+                        new Person { Name = "Pankaj", Age = 23, Country = "India", Education = "Graduation", Hobby = "Badminton" },
+                    }
+                },
+                new
+                {
+                    GName = "A",
+                    Members = new[] {
+                        new Person { Name = "Ajinkya", Age = 23, Country = "India", Education = "Graduation", Hobby = "Cricket" },
+                        new Person { Name = "Aashish", Age = 23, Country = "India", Education = "Graduation", Hobby = "Swimming" },
+                        new Person { Name = "Arun", Age = 23, Country = "India", Education = "Graduation", Hobby = "Running" },
+                    }
+                }
+            };
+
+            foreach(var g in peopleGroups)
+            {
+                allGroups.Add(g.GName, new List<Person>());
+                foreach(var n in g.Members)
+                {
+                    allGroups[g.GName].Add(n);
+                    groups[n].AddPeople(n);
+                }
+            }
+
+        }
+
+        public void DisplayPeopleGroups()
+        {
+            foreach(string g in allGroups.Keys)
+            {
+                Console.WriteLine("People : " + g);
+                    foreach(var n in allGroups[g])
+                    {
+                        groups[n].GetPeople(n);
+                    }
+                
+            }
+            Console.WriteLine("Please select a key to view its members");
+            string x=Console.ReadLine();
+            foreach(string s in allGroups.Keys)
+            {
+                if(s.Equals(x))
+                {
+                    foreach(var n in allGroups[s])
+                    {
+                        groups[n].GetFullDetails(n);
+                    }
+                }
+            }
+            
+        }
+    
+}
+
+
     class Program
     {
-        static void Main(string[] args)
-        {
+        
+            static void Main(string[] args)
+            {
+
             Console.WriteLine("Hello Design Patterns");
-            string param = "Piyush";
-            IComponent<string> names = new Composite<string>("Name with surname");
-            IComponent<string> surnames = names;
-            for(int i=0;i<=5;i++)
-            { 
-                IComponent<string> c = new Composite<string>(param + i);
-                surnames.Add(c);
-                surnames = c;
+            Client cl = new Client();
+            cl.LoadPeopleGroups();
+            cl.DisplayPeopleGroups();
 
-            }
-            
-            Console.WriteLine(names.Display(0));
-
-            
-
-            
-        }
+            }   
     }
 }
