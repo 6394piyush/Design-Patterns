@@ -6,89 +6,39 @@ using System.Text;
 
 namespace DesignPatterns
 {
-
-    // ITarget interface
-    public interface IAircraft
-    {
-        bool Airborne { get; }
-        void TakeOff();
-        int Height { get; }
-    }
-    public sealed class Aircraft : IAircraft
-    {
-        int h;
-        bool a;
-        public Aircraft()
+    class Adaptee
+    {   //existing way req are implemented
+        public double precise(double a,double b)
         {
-            h= 0;
-            a = false;
-        }
-        public void TakeOff()
-        {
-            Console.WriteLine("Aircraft engine takeoff");
-            a = true;
-            h = 200; // Meters
-        }
-        public bool Airborne
-        {
-            get { return a; }
-        }
-        public int Height
-        {
-            get { return h; }
+            return a / b;
         }
     }
 
-    // Adaptee interface
-    public interface ISeacraft
+    class Target
     {
-        int Speed { get; }
-        void IncreaseRevs();
-    }
-    // Adaptee implementation
-    public class Seacraft : ISeacraft
-    {
-        int speed = 0;
-        public virtual void IncreaseRevs()
+        //new standard for requests
+        public string Estimate(int i)
         {
-            speed += 10;
-            Console.WriteLine("Seacraft engine increases revs to " + speed + " knots");
-        }
-        public int Speed
-        {
-            get { return speed; }
+            return "estimate is " + (int)Math.Round(i / 3.0);
         }
     }
-
-    class Seabird : Seacraft, IAircraft
+    class Adaptor:Adaptee
     {
-        int h = 0;
-
-        public void TakeOff()
+        public Func<int, string> Request;  //string Estimate(Int i) method signature
+        public Adaptor(Adaptee adaptee)
         {
-            while(!Airborne)
+            Request = delegate (int i)
             {
-                IncreaseRevs();
-            }
+                return "Estimate based in Precision is " + (int)Math.Round(precise(i, 3));
+            };
         }
-        public int Height
+        public Adaptor(Target target)
         {
-            get { return h; }
-        }
-
-        public override void IncreaseRevs()
-        {
-            base.IncreaseRevs();
-            if(Speed>40)
-            {
-                h += 100;
-            }
-        }
-        public bool Airborne
-        {
-            get { return h > 50; }
+            Request = target.Estimate;
         }
     }
+   
+   
 
     class Program
     {
@@ -97,25 +47,12 @@ namespace DesignPatterns
             {
 
             Console.WriteLine("Hello Design Patterns");
-            Console.WriteLine("Aircraft Engine");
-            IAircraft aircraft = new Aircraft();
-            aircraft.TakeOff();
-            if(aircraft.Airborne)
-                Console.WriteLine("Aircraft Flying at "+aircraft.Height+" meters");
-            Console.WriteLine("Use the engine of seabird");
-            Seabird seabird = new Seabird();
-            seabird.TakeOff();
-            Console.WriteLine("The Seabird Took off");
 
-            Console.WriteLine("Increase the speed of seabird");
-            (seabird as ISeacraft).IncreaseRevs();
-            (seabird as ISeacraft).IncreaseRevs();
-            (seabird as ISeacraft).IncreaseRevs();
-            if(seabird.Airborne)
-                Console.WriteLine("Seabird is flying at height "+seabird.Height+" meters and speed "+(seabird as ISeacraft).Speed+" knots");
-            Console.WriteLine("Experiment successfull seabird flies");
-
-
+            Adaptor adapter1 = new Adaptor(new Adaptee());
+             Console.WriteLine(adapter1.Request(5));
+            
+            Adaptor adapter2 = new Adaptor(new Target());
+            Console.WriteLine(adapter2.Request(5));
 
         }   
     }
