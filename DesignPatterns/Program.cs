@@ -8,96 +8,104 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    public abstract class IPrototype<T>
+    interface IFactory<Brand> where Brand : IBrand
     {
-        //shallow Copy
-        public T Clone()
-        {
-            return (T)this.MemberwiseClone();
-        }
-
-        //Deep Copy
-        public T DeepCopy()
-        {
-            MemoryStream ms = new MemoryStream();
-            BinaryFormatter bf = new BinaryFormatter();
-
-            bf.Serialize(ms, this);
-            ms.Seek(0, SeekOrigin.Begin);
-            T copy = (T)bf.Deserialize(ms);
-            ms.Close();
-            return copy;
-        }
-    }
-    [Serializable()]
-    class Prototype:IPrototype<Prototype>
-    {
-        public string Country { get; set; }
-        public string Capital { get; set; }
-        public DeeperData Language { get; set; }
-
-        public Prototype(string ctry,string cap,string lang)
-        {
-            Country = ctry;
-            Capital = cap;
-            Language = new DeeperData(lang);
-        }
-
-        public override string ToString()
-        {
-             return Country + "\t\t" + Capital + "\t\t->" + Language;
-        }
+        IShoes CreateShoes();
+        IBag CreateBag();
     }
 
-    [Serializable()]
-    class DeeperData
+    class Factory<Brand>: IFactory<Brand> where Brand:IBrand ,new()
     {
-        public string data { get; set; }
-        public DeeperData(string s)
+        public IBag CreateBag()
         {
-            data = s;
+            return new Bag<Brand>();
         }
-        public override string ToString()
+        public IShoes CreateShoes()
         {
-            return data;
+            return new Shoes<Brand>();
         }
+    }
+    interface IShoes
+    {
+        int Price { get; }
     }
 
-    class PrototypeManager:IPrototype<Prototype>
+    interface IBag
     {
-        public Dictionary<string, Prototype> prototypes = new Dictionary<string, Prototype>
-        {
-            { "Germany",new Prototype("Germany","Berlin","Germen") },
-            { "Italy",new Prototype("Italy","Rome","Italian") },
-            { "Australia",new Prototype("Australia","Canberra","English") }
-        };
+        string Material { get; }
+    
     }
 
-    class PrototypeClient:IPrototype<Prototype>
-    {
-        static void Report(string s,Prototype p,Prototype q)
-        {
-            Console.WriteLine("Prototye "+p+"\nClone "+q);
+
+class Bag<Brand> : IBag where Brand : IBrand, new()
+    { 
+     private Brand brand; 
+        public Bag() 
+        { 
+            brand = new Brand();
         }
+    public string Material { get { return brand.Material; } 
+
     }
-        
+}
+
+class Shoes<Brand> : IShoes where Brand : IBrand, new() 
+    { 
+        private Brand mybrand; 
+        public Shoes()
+        {
+            mybrand = new Brand();
+        }
+
+    public int Price { get { return mybrand.Price; } }
+    }
+
+
+interface IBrand
+{
+    int Price { get; }
+    string Material { get; }
+}
+
+    class Gucci : IBrand
+    {
+        public int Price { get { return 1000; } }
+
+        public string Material { get { return "crocodile skin"; } }
+    }
+
+    class Poochi : IBrand
+    {
+        public int Price { get { return new Gucci().Price / 3; } }
+
+        public string Material { get { return "Plastic"; } }
+    }
+
+    class Client<Brand> where Brand : IBrand, new()
+    {
+        public void ClientMain()
+        {
+            IFactory<Brand> factory = new Factory<Brand>();
+            IShoes shoes = factory.CreateShoes();
+            IBag bag = factory.CreateBag();
+
+            Console.WriteLine("I brought bag made from "+bag.Material);
+            Console.WriteLine("I brought shoes at price " + shoes.Price);
+        }
+
+    }
+
     class Program
     {
 
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Design Patterns");
-            PrototypeManager pm = new PrototypeManager();
-            Prototype c2, c3;
-            c2 = pm.prototypes["Australia"].Clone();
-            Console.WriteLine("Clonning Australia "+"Prototye " + pm.prototypes["Australia"] + "\nClone " + c2);
-            c2.Capital = "Sydney";
-            Console.WriteLine("Altering Australia shallow state " + "Prototye " + pm.prototypes["Australia"] + "\nClone " + c2);
-            c2.Language.data = "Chinese";
-            Console.WriteLine("Altering Australia Deep state " + "Prototye " + pm.prototypes["Australia"] + "\nClone " + c2);
+            new Client<Gucci>().ClientMain();
+            new Client<Poochi>().ClientMain();
         }
 
 
-            
-        }   
-    }
+
+    }      
+}
