@@ -8,104 +8,101 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    interface IFactory<Brand> where Brand : IBrand
+    class Director
     {
-        IShoes CreateShoes();
-        IBag CreateBag();
-    }
-
-    class Factory<Brand>: IFactory<Brand> where Brand:IBrand ,new()
-    {
-        public IBag CreateBag()
+        public void Construct(IBuilder builder)
         {
-            return new Bag<Brand>();
+            builder.BuildPartA();
+            builder.BuildPartB();
+
+
         }
-        public IShoes CreateShoes()
+    }
+    interface IBuilder
+    {
+        void BuildPartA();
+        void BuildPartB();
+
+        Product GetResult();
+    }
+    class Builder1 : IBuilder
+    {
+        Product product = new Product();
+        public void BuildPartA()
         {
-            return new Shoes<Brand>();
+            product.Add("Part A");
         }
-    }
-    interface IShoes
-    {
-        int Price { get; }
-    }
 
-    interface IBag
-    {
-        string Material { get; }
-    
-    }
-
-
-class Bag<Brand> : IBag where Brand : IBrand, new()
-    { 
-     private Brand brand; 
-        public Bag() 
-        { 
-            brand = new Brand();
-        }
-    public string Material { get { return brand.Material; } 
-
-    }
-}
-
-class Shoes<Brand> : IShoes where Brand : IBrand, new() 
-    { 
-        private Brand mybrand; 
-        public Shoes()
+        public void BuildPartB()
         {
-            mybrand = new Brand();
+            product.Add("Part B");
         }
 
-    public int Price { get { return mybrand.Price; } }
-    }
-
-
-interface IBrand
-{
-    int Price { get; }
-    string Material { get; }
-}
-
-    class Gucci : IBrand
-    {
-        public int Price { get { return 1000; } }
-
-        public string Material { get { return "crocodile skin"; } }
-    }
-
-    class Poochi : IBrand
-    {
-        public int Price { get { return new Gucci().Price / 3; } }
-
-        public string Material { get { return "Plastic"; } }
-    }
-
-    class Client<Brand> where Brand : IBrand, new()
-    {
-        public void ClientMain()
+        public Product GetResult()
         {
-            IFactory<Brand> factory = new Factory<Brand>();
-            IShoes shoes = factory.CreateShoes();
-            IBag bag = factory.CreateBag();
-
-            Console.WriteLine("I brought bag made from "+bag.Material);
-            Console.WriteLine("I brought shoes at price " + shoes.Price);
+            return product;
+        }
+    }
+    class Builder2 : IBuilder
+    {
+        Product product = new Product();
+        public void BuildPartA()
+        {
+            product.Add("Part X");
         }
 
+        public void BuildPartB()
+        {
+            product.Add("Part Y");
+        }
+
+        public Product GetResult()
+        {
+            return product;
+        }
+    }
+    class Product
+    {
+        List<string> parts = new List<string>();
+        public void Add(string s)
+        {
+            parts.Add(s);
+        }
+
+        public void Display()
+        {
+            Console.WriteLine("\nProduct Parts -------");
+            foreach (string part in parts)
+                Console.Write(part);
+            Console.WriteLine();
+
+        }
     }
 
-    class Program
-    {
-
-        static void Main(string[] args)
+        class Program
         {
-            Console.WriteLine("Hello Design Patterns");
-            new Client<Gucci>().ClientMain();
-            new Client<Poochi>().ClientMain();
+
+            static void Main(string[] args)
+            {
+                Console.WriteLine("Hello Design Patterns");
+            Director director = new Director();
+            IBuilder b1 = new Builder1();
+            IBuilder b2 = new Builder2();
+
+            director.Construct(b1);
+            Product p1 = b1.GetResult();
+            p1.Display();
+            director.Construct(b2);
+            Product p2 = b2.GetResult();
+            p2.Display();
+
+
+
+            }
+
+
+
         }
+    }
 
 
-
-    }      
-}
