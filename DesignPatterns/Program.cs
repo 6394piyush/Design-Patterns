@@ -8,48 +8,26 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    public abstract class PastaDish
+    class Handler
     {
-      public void MakeRecipe()
+        Handler next;
+        int id;
+        int Limit { get; set; }
+        public Handler(int id,Handler hdl)
         {
-            boilWater();
-            addPasta();
-            cookPasta();
-
+            this.id = id;
+            Limit = id * 1000;
+            next = hdl;
         }
 
-        public abstract void AddPasta();
-        public abstract void AddSauce();
-        public abstract void AddGarnish();
-        private void boilWater()
+        public string HandleRequest(int data)
         {
-            Console.WriteLine("Boiling water");
-        }
-        private void addPasta()
-        {
-            Console.WriteLine("Adding Pasta");
-        }
-        private void cookPasta()
-        {
-            Console.WriteLine("Cooking Pasta");
-        }
-    }
-
-    class Sphagetti : PastaDish
-    {
-        public override void AddGarnish()
-        {
-            Console.WriteLine("Garnish Added");
-        }
-
-        public override void AddPasta()
-        {
-            Console.WriteLine("Pasta Added");
-        }
-
-        public override void AddSauce()
-        {
-            Console.WriteLine("Sauce Added");
+            if (data < Limit)
+                return "Reuest for " + data + " handled at level " + id;
+            else if (next != null)
+                return next.HandleRequest(data);
+            else return ("Request for " + data + " handled BY DEEFAULT at level " + id);
+        
         }
     }
 
@@ -58,11 +36,18 @@ namespace DesignPatterns
 
             static void Main(string[] args)
             {
-            Sphagetti ob = new Sphagetti();
-            ob.MakeRecipe();
-            ob.AddSauce();
-            ob.AddGarnish();
-            
+            Handler start = null;
+            for(int i=5;i>0;i--)
+            {
+                Console.WriteLine("Handler "+i+" deals up to  a limit of "+i*1000);
+                start = new Handler(i,start);
+            }
+
+            int[] a = { 50, 1000, 1500, 10000, 175, 4500 };
+            foreach(int i in a)
+            {
+                Console.WriteLine(start.HandleRequest(i));
+            }
             
 
 
