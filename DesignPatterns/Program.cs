@@ -8,94 +8,62 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    class Director
+    public abstract class PastaDish
     {
-        public void Construct(IBuilder builder)
+      public void MakeRecipe()
         {
-            builder.BuildPartA();
-            builder.BuildPartB();
-
+            boilWater();
+            addPasta();
+            cookPasta();
 
         }
-    }
-    interface IBuilder
-    {
-        void BuildPartA();
-        void BuildPartB();
 
-        Product GetResult();
-    }
-    class Builder1 : IBuilder
-    {
-        Product product = new Product();
-        public void BuildPartA()
+        public abstract void AddPasta();
+        public abstract void AddSauce();
+        public abstract void AddGarnish();
+        private void boilWater()
         {
-            product.Add("Part A");
+            Console.WriteLine("Boiling water");
         }
-
-        public void BuildPartB()
+        private void addPasta()
         {
-            product.Add("Part B");
+            Console.WriteLine("Adding Pasta");
         }
-
-        public Product GetResult()
+        private void cookPasta()
         {
-            return product;
-        }
-    }
-    class Builder2 : IBuilder
-    {
-        Product product = new Product();
-        public void BuildPartA()
-        {
-            product.Add("Part X");
-        }
-
-        public void BuildPartB()
-        {
-            product.Add("Part Y");
-        }
-
-        public Product GetResult()
-        {
-            return product;
-        }
-    }
-    class Product
-    {
-        List<string> parts = new List<string>();
-        public void Add(string s)
-        {
-            parts.Add(s);
-        }
-
-        public void Display()
-        {
-            Console.WriteLine("\nProduct Parts -------");
-            foreach (string part in parts)
-                Console.Write(part);
-            Console.WriteLine();
-
+            Console.WriteLine("Cooking Pasta");
         }
     }
 
-        class Program
+    class Sphagetti : PastaDish
+    {
+        public override void AddGarnish()
+        {
+            Console.WriteLine("Garnish Added");
+        }
+
+        public override void AddPasta()
+        {
+            Console.WriteLine("Pasta Added");
+        }
+
+        public override void AddSauce()
+        {
+            Console.WriteLine("Sauce Added");
+        }
+    }
+
+    class Program
         {
 
             static void Main(string[] args)
             {
-                Console.WriteLine("Hello Design Patterns");
-            Director director = new Director();
-            IBuilder b1 = new Builder1();
-            IBuilder b2 = new Builder2();
-
-            director.Construct(b1);
-            Product p1 = b1.GetResult();
-            p1.Display();
-            director.Construct(b2);
-            Product p2 = b2.GetResult();
-            p2.Display();
-
+            Sphagetti ob = new Sphagetti();
+            ob.MakeRecipe();
+            ob.AddSauce();
+            ob.AddGarnish();
+            
+            
 
 
             }
