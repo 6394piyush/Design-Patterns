@@ -8,26 +8,46 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    class Handler
+    public class Client
     {
-        Handler next;
-        int id;
-        int Limit { get; set; }
-        public Handler(int id,Handler hdl)
+        IStrategy strategy = new StrategyA();
+        public int count = 5;
+        
+         public int Algorithm()
         {
-            this.id = id;
-            Limit = id * 1000;
-            next = hdl;
+            return strategy.Move(this);
         }
 
-        public string HandleRequest(int data)
+        public void SwitchStrategies()
         {
-            if (data < Limit)
-                return "Reuest for " + data + " handled at level " + id;
-            else if (next != null)
-                return next.HandleRequest(data);
-            else return ("Request for " + data + " handled BY DEEFAULT at level " + id);
-        
+            if (strategy is StrategyA)
+            {
+                strategy= new StrategyB();
+            }
+            else if (strategy is StrategyB)
+            {
+                strategy = new StrategyA();
+            }
+        }
+    }
+    public interface IStrategy //what alogo does
+    {
+        public int Move(Client c);
+    }
+
+    class StrategyA : IStrategy
+    {
+        public int Move(Client c)
+        {
+            return ++c.count;
+        }
+    }
+
+    class StrategyB : IStrategy
+    {
+        public int Move(Client c)
+        {
+            return --c.count;
         }
     }
 
@@ -36,20 +56,20 @@ namespace DesignPatterns
 
             static void Main(string[] args)
             {
-            Handler start = null;
-            for(int i=5;i>0;i--)
+                Console.WriteLine("Hello Design Patterns");
+            Client c = new Client();
+            Random r = new Random();
+            for(int i=5;i<=20;i++)
             {
-                Console.WriteLine("Handler "+i+" deals up to  a limit of "+i*1000);
-                start = new Handler(i,start);
-            }
+                if(r.Next(3)==2)
+                {
+                    Console.WriteLine(" || ");
+                    c.SwitchStrategies();
+                }
+                Console.WriteLine(c.Algorithm()+ " ");
 
-            int[] a = { 50, 1000, 1500, 10000, 175, 4500 };
-            foreach(int i in a)
-            {
-                Console.WriteLine(start.HandleRequest(i));
             }
-            
-
+            Console.WriteLine();
 
             }
 
