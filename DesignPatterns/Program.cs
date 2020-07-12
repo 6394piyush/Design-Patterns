@@ -10,44 +10,65 @@ namespace DesignPatterns
 {
     public class Client
     {
-        IStrategy strategy = new StrategyA();
-        public int count = 5;
+        IState strategy = new StateA();
+
+        public IState state { get; set; }
+        public const int limit = 10;
+        public int count = limit;
         
-         public int Algorithm()
+
+        
+         public int Request(int n)
         {
-            return strategy.Move(this);
+            if(n==2)
+                return state.MoveUp(this);
+            return state.MoveDown(this);
+            
         }
 
-        public void SwitchStrategies()
-        {
-            if (strategy is StrategyA)
-            {
-                strategy= new StrategyB();
-            }
-            else if (strategy is StrategyB)
-            {
-                strategy = new StrategyA();
-            }
-        }
+        
     }
-    public interface IStrategy //what alogo does
+    public interface IState //what alogo does
     {
-        public int Move(Client c);
+        public int MoveUp(Client c);
+        public int MoveDown(Client c);
     }
 
-    class StrategyA : IStrategy
+    class StateA : IState
     {
-        public int Move(Client c)
+        public int MoveDown(Client c)
+        {
+            if(c.count > Client.limit)
+            {
+                c.state = new StateB();
+                Console.WriteLine(" || ");
+            }
+            return c.count-=2;
+            
+        }
+
+        public int MoveUp(Client c)
+        {
+            return c.count+=2;
+        }
+    }
+
+    class StateB : IState
+    {
+        public int MoveDown(Client c)
+        {
+            if (c.count > Client.limit)
+            {
+                c.state = new StateA();
+                Console.WriteLine(" || ");
+            }
+            return --c.count;
+
+        }
+
+        public int MoveUp(Client c)
         {
             return ++c.count;
-        }
-    }
-
-    class StrategyB : IStrategy
-    {
-        public int Move(Client c)
-        {
-            return --c.count;
         }
     }
 
@@ -56,17 +77,13 @@ namespace DesignPatterns
 
             static void Main(string[] args)
             {
-                Console.WriteLine("Hello Design Patterns");
+            Console.WriteLine("Hello Design Patterns");
             Client c = new Client();
+            c.state = new StateA();
             Random r = new Random();
             for(int i=5;i<=20;i++)
             {
-                if(r.Next(3)==2)
-                {
-                    Console.WriteLine(" || ");
-                    c.SwitchStrategies();
-                }
-                Console.WriteLine(c.Algorithm()+ " ");
+                Console.WriteLine(c.Request(r.Next(3)));
 
             }
             Console.WriteLine();
