@@ -8,91 +8,58 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    public class Client
-    {
-        IState strategy = new StateA();
+    
 
-        public IState state { get; set; }
-        public const int limit = 10;
-        public int count = limit;
-        
 
-        
-         public int Request(int n)
+       
+        class Program
         {
-            if(n==2)
-                return state.MoveUp(this);
-            return state.MoveDown(this);
-            
-        }
 
-        
-    }
-    public interface IState //what alogo does
-    {
-        public int MoveUp(Client c);
-        public int MoveDown(Client c);
-    }
+        delegate void Invoker();
+        static Invoker Execute, Undo, Redo;
 
-    class StateA : IState
-    {
-        public int MoveDown(Client c)
+        class Command
         {
-            if(c.count > Client.limit)
+            public Command(Reciever r)
             {
-                c.state = new StateB();
-                Console.WriteLine(" || ");
+                Execute = r.Action;
+                Undo = r.Reverse;
+                Redo = r.Action;
             }
-            return c.count-=2;
-            
         }
 
-        public int MoveUp(Client c)
+        class Reciever
         {
-            return c.count+=2;
-        }
-    }
-
-    class StateB : IState
-    {
-        public int MoveDown(Client c)
-        {
-            if (c.count > Client.limit)
+            string build, oldbuild;
+            string s = "Some String";
+            public void Action()
             {
-                c.state = new StateA();
-                Console.WriteLine(" || ");
+                oldbuild = build;
+                build += s;
+                Console.WriteLine("Reciever is adding " + build);
             }
-            return --c.count;
-
-        }
-
-        public int MoveUp(Client c)
-        {
-            return ++c.count;
-        }
-    }
-
-    class Program
-        {
-
-            static void Main(string[] args)
+            public void Reverse()
             {
-            Console.WriteLine("Hello Design Patterns");
-            Client c = new Client();
-            c.state = new StateA();
-            Random r = new Random();
-            for(int i=5;i<=20;i++)
-            {
-                Console.WriteLine(c.Request(r.Next(3)));
-
+                build = oldbuild;
+                Console.WriteLine("Reciever is reverting to " + build);
             }
-            Console.WriteLine();
+        }
 
+        static void Main(string[] args)
+            {
+                Console.WriteLine("Hello Design Patterns");
+            new Command(new Reciever());
+            Execute();
+            Redo();
+            Undo();
+            Execute();
+                
             }
 
 
 
         }
     }
+
 
 
