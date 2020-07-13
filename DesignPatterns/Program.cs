@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -8,52 +9,33 @@ using System.Text;
 
 namespace DesignPatterns
 {
-    
 
-
-       
-        class Program
+    class MonthIterator : IEnumerable
+    {
+        string[] months = { "January", "February","March","April","May","June","July","August","September","October","November","December" };
+        public IEnumerator GetEnumerator()
         {
-
-        delegate void Invoker();
-        static Invoker Execute, Undo, Redo;
-
-        class Command
-        {
-            public Command(Reciever r)
+            foreach(string item in months)
             {
-                Execute = r.Action;
-                Undo = r.Reverse;
-                Redo = r.Action;
+                yield return item;
             }
         }
+    }
 
-        class Reciever
+
+    class Program
         {
-            string build, oldbuild;
-            string s = "Some String";
-            public void Action()
-            {
-                oldbuild = build;
-                build += s;
-                Console.WriteLine("Reciever is adding " + build);
-            }
-            public void Reverse()
-            {
-                build = oldbuild;
-                Console.WriteLine("Reciever is reverting to " + build);
-            }
-        }
+
 
         static void Main(string[] args)
             {
                 Console.WriteLine("Hello Design Patterns");
-            new Command(new Reciever());
-            Execute();
-            Redo();
-            Undo();
-            Execute();
-                
+                MonthIterator month = new MonthIterator();
+                foreach(string n in month)
+                {
+                    Console.WriteLine(n+" ");
+                    Console.WriteLine();
+                }
             }
 
 
